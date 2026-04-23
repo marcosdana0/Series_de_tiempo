@@ -1,0 +1,581 @@
+\documentclass[12pt,a4paper]{article}
+
+% ── Paquetes ──────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{float}
+
+\geometry{margin=2.5cm}
+
+% ── Colores para código Python ────────────────────────────
+\definecolor{codebg}{RGB}{245,245,245}
+\definecolor{codestr}{RGB}{163,21,21}
+\definecolor{codecomment}{RGB}{0,128,0}
+\definecolor{codekw}{RGB}{0,0,180}
+
+\lstset{
+  language=Python,
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{codekw}\bfseries,
+  stringstyle=\color{codestr},
+  commentstyle=\color{codecomment}\itshape,
+  showstringspaces=false,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!50},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=6pt,
+  xleftmargin=12pt
+}
+
+% ── Ambientes matemáticos ─────────────────────────────────
+\newtheorem{definicion}{Definición}
+\newtheorem{propiedad}{Propiedad}
+
+% ── Portada ───────────────────────────────────────────────
+\title{
+  \textbf{Modelos (S)ARIMA para Series de Tiempo Financieras} \\[0.5em]
+  \large Forma General, Herramientas de Diagnóstico y Aplicaciones en Python
+}
+\author{Análisis de Series de Tiempo}
+\date{\today}
+
+% ─────────────────────────────────────────────────────────
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+% ─────────────────────────────────────────────────────────
+\section{Introducción}
+% ─────────────────────────────────────────────────────────
+
+Los modelos \textbf{ARIMA} (AutoRegressive Integrated Moving Average) y su extensión
+estacional \textbf{SARIMA} son herramientas fundamentales para el análisis y pronóstico
+de series de tiempo. En finanzas se utilizan para modelar precios de activos, tasas de
+interés, retornos bursátiles y cualquier proceso que evolucione en el tiempo.
+
+Este documento presenta: (1) la forma general del modelo $(S)ARIMA(p,d,q)(P,D,Q)_s$,
+(2) los criterios de diagnóstico ACF, PACF, AIC y BIC, y (3) tres ejemplos prácticos
+con datos financieros simulados en Python.
+
+% ─────────────────────────────────────────────────────────
+\section{Forma General del Modelo (S)ARIMA}
+% ─────────────────────────────────────────────────────────
+
+\subsection{Modelo ARIMA$(p,d,q)$}
+
+Sea $\{y_t\}$ una serie de tiempo. El modelo \textbf{ARIMA}$(p,d,q)$ aplica $d$
+diferencias ordinarias para obtener una serie estacionaria $w_t = \Delta^d y_t$,
+que satisface:
+
+\begin{equation}
+  \phi_p(B)\,w_t = \theta_q(B)\,\varepsilon_t,
+  \qquad \varepsilon_t \sim \mathrm{WN}(0,\sigma^2)
+  \label{eq:arima}
+\end{equation}
+
+donde $B$ es el operador de rezago ($B\,y_t = y_{t-1}$),
+
+\begin{align}
+  \phi_p(B) &= 1 - \phi_1 B - \phi_2 B^2 - \cdots - \phi_p B^p
+              \quad \text{(polinomio AR)}, \\
+  \theta_q(B) &= 1 + \theta_1 B + \theta_2 B^2 + \cdots + \theta_q B^q
+              \quad \text{(polinomio MA)}.
+\end{align}
+
+\begin{table}[H]
+\centering
+\caption{Parámetros del modelo ARIMA$(p,d,q)$}
+\begin{tabular}{cll}
+\toprule
+\textbf{Parámetro} & \textbf{Significado} & \textbf{Identificación} \\
+\midrule
+$p$ & Orden autoregresivo   & PACF se corta en el rezago $p$ \\
+$d$ & Número de diferencias & Prueba ADF / KPSS \\
+$q$ & Orden de media móvil  & ACF se corta en el rezago $q$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Extensión estacional: SARIMA$(p,d,q)(P,D,Q)_s$}
+
+Cuando la serie presenta \textbf{estacionalidad de período $s$}, se añade una
+componente estacional multiplicativa. La \textbf{forma general} es:
+
+\begin{equation}
+  \boxed{
+    \Phi_P(B^s)\,\phi_p(B)\;\Delta_s^D\,\Delta^d\,y_t
+    \;=\;
+    \Theta_Q(B^s)\,\theta_q(B)\;\varepsilon_t
+  }
+  \label{eq:sarima}
+\end{equation}
+
+donde $\Delta_s = 1 - B^s$ es el operador de diferencia estacional y:
+
+\begin{align}
+  \Phi_P(B^s)   &= 1 - \Phi_1 B^s - \cdots - \Phi_P B^{sP}
+                   \quad \text{(AR estacional)}, \\
+  \Theta_Q(B^s) &= 1 + \Theta_1 B^s + \cdots + \Theta_Q B^{sQ}
+                   \quad \text{(MA estacional)}.
+\end{align}
+
+\begin{table}[H]
+\centering
+\caption{Parámetros del modelo SARIMA$(p,d,q)(P,D,Q)_s$}
+\begin{tabular}{cll}
+\toprule
+\textbf{Parámetro} & \textbf{Significado} & \textbf{Típico en finanzas} \\
+\midrule
+$p,d,q$   & Componente regular    & $d=1$ para precios \\
+$P,D,Q$   & Componente estacional & $P,Q\in\{0,1\}$ \\
+$s$       & Período estacional    & $s=12$ mensual; $s=4$ trimestral \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Casos especiales}
+
+\begin{itemize}
+  \item \textbf{AR$(p)$}: $d=0,\;q=0$ — solo componente autoregresiva.
+  \item \textbf{MA$(q)$}: $d=0,\;p=0$ — solo media móvil.
+  \item \textbf{Caminata aleatoria}: ARIMA$(0,1,0)$ — modelo de referencia para precios.
+  \item \textbf{ARIMA$(0,1,1)$}: equivale al suavizamiento exponencial simple.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────
+\section{Herramientas de Diagnóstico e Identificación}
+% ─────────────────────────────────────────────────────────
+
+\subsection{Función de Autocorrelación (ACF)}
+
+\begin{definicion}[ACF]
+La \emph{función de autocorrelación} al rezago $k$ se define como:
+\[
+  \rho_k \;=\; \frac{\mathrm{Cov}(y_t,\,y_{t-k})}{\mathrm{Var}(y_t)}
+           \;=\; \frac{\gamma_k}{\gamma_0}.
+\]
+\end{definicion}
+
+Reglas de identificación:
+\begin{itemize}
+  \item \textbf{MA$(q)$}: la ACF se \emph{corta} bruscamente después del rezago $q$.
+  \item \textbf{AR$(p)$}: la ACF decrece de forma exponencial o sinusoidal.
+  \item Decaimiento muy lento $\Rightarrow$ serie no estacionaria ($d \geq 1$).
+  \item Picos significativos en múltiplos de $s$ $\Rightarrow$ estacionalidad.
+\end{itemize}
+
+\subsection{Función de Autocorrelación Parcial (PACF)}
+
+\begin{definicion}[PACF]
+La \emph{función de autocorrelación parcial} al rezago $k$ mide la correlación entre
+$y_t$ y $y_{t-k}$ eliminando el efecto lineal de los rezagos intermedios
+$y_{t-1},\ldots,y_{t-k+1}$.
+\end{definicion}
+
+Reglas de identificación:
+\begin{itemize}
+  \item \textbf{AR$(p)$}: la PACF se \emph{corta} después del rezago $p$.
+  \item \textbf{MA$(q)$}: la PACF decrece gradualmente.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Guía de identificación ACF--PACF (Box--Jenkins)}
+\begin{tabular}{lll}
+\toprule
+\textbf{Modelo} & \textbf{ACF} & \textbf{PACF} \\
+\midrule
+AR$(p)$     & Decrece exponencial / sinusoidal  & Se corta en rezago $p$ \\
+MA$(q)$     & Se corta en rezago $q$            & Decrece exponencial / sinusoidal \\
+ARMA$(p,q)$ & Decrece después del rezago $q$    & Decrece después del rezago $p$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Criterio de Información de Akaike (AIC)}
+
+\begin{equation}
+  \mathrm{AIC} = -2\,\hat{\ell} + 2k
+\end{equation}
+
+donde $\hat{\ell}$ es el log-verosimilitud maximizado y $k$ es el número de parámetros.
+Se prefiere el modelo con \textbf{AIC menor}. Penaliza la complejidad para evitar sobreajuste.
+
+\subsection{Criterio de Información Bayesiano (BIC)}
+
+\begin{equation}
+  \mathrm{BIC} = -2\,\hat{\ell} + k\,\ln(T)
+\end{equation}
+
+donde $T$ es el número de observaciones. El BIC penaliza la complejidad más fuertemente
+que el AIC, favoreciendo modelos más parsimoniosos. En muestras grandes, BIC selecciona
+el modelo ``verdadero'' con mayor probabilidad.
+
+\subsection{Prueba de Dickey-Fuller Aumentada (ADF)}
+
+La prueba ADF verifica:
+\[
+  H_0\colon \text{la serie tiene raíz unitaria (no es estacionaria)}.
+\]
+Si $p\text{-valor} < 0.05$ se rechaza $H_0$ y la serie es estacionaria.
+Si no se rechaza, se aplica una diferencia ($d \leftarrow d+1$) y se repite.
+
+% ─────────────────────────────────────────────────────────
+\section{Proceso de Modelado Box--Jenkins}
+% ─────────────────────────────────────────────────────────
+
+El enfoque clásico sigue cuatro etapas:
+
+\begin{enumerate}
+  \item \textbf{Identificación}: verificar estacionariedad (ADF), transformar si es
+        necesario ($\ln$, diferencias), inspeccionar ACF y PACF.
+  \item \textbf{Estimación}: ajustar por máxima verosimilitud; comparar candidatos con
+        AIC y BIC.
+  \item \textbf{Validación}: analizar residuos $\{\hat{\varepsilon}_t\}$:
+        ACF $\approx 0$ (Ljung-Box $p>0.05$), normalidad (Jarque-Bera),
+        homocedasticidad.
+  \item \textbf{Pronóstico}: generar predicciones con intervalos de confianza al 95\,\%.
+\end{enumerate}
+
+% ─────────────────────────────────────────────────────────
+\section{Ejemplos en Python con Datos Financieros}
+% ─────────────────────────────────────────────────────────
+
+Los tres ejemplos usan datos simulados con propiedades estadísticas realistas
+(tendencia, volatilidad y estacionalidad similares a las de los activos reales).
+Para sustituir por datos reales basta reemplazar la sección de generación de datos
+por una descarga con \texttt{yfinance}.
+
+% ── Preámbulo Python común ────────────────────────────────
+\begin{lstlisting}[caption={Importaciones y funciones auxiliares comunes a los tres ejemplos}]
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from statsmodels.tsa.stattools import adfuller
+import warnings
+warnings.filterwarnings('ignore')
+
+np.random.seed(42)
+
+def test_adf(serie, nombre):
+    """Prueba Dickey-Fuller Aumentada."""
+    res = adfuller(serie.dropna())
+    print(f"ADF [{nombre}]: estadistico={res[0]:.4f}, p={res[1]:.4f}")
+    if res[1] < 0.05:
+        print("  -> Serie ESTACIONARIA (se rechaza H0)")
+    else:
+        print("  -> NO estacionaria; considerar diferenciacion")
+    return res[1]
+
+def graficar_acf_pacf(serie, titulo, lags=30):
+    """Grafica la serie, ACF y PACF."""
+    fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+    axes[0].plot(serie.values, linewidth=0.8)
+    axes[0].set_title(f"{titulo} - Serie")
+    plot_acf(serie.values,  lags=lags, ax=axes[1],
+             title=f"ACF - {titulo}", zero=False)
+    plot_pacf(serie.values, lags=lags, ax=axes[2],
+             title=f"PACF - {titulo}", zero=False)
+    plt.tight_layout()
+    plt.savefig(f"fig_{titulo.replace(' ','_')}.png", dpi=120)
+    plt.show()
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────
+\subsection{Ejemplo 1: Apple Inc.\ (AAPL) --- ARIMA$(2,1,2)$}
+% ─────────────────────────────────────────────────────────
+
+\textbf{Contexto.} Se modela el precio de cierre diario de Apple. La prueba ADF
+confirma no estacionariedad en nivel ($p = 0.9013$) y estacionariedad tras la primera
+diferencia ($p < 0.0001$), por lo que $d=1$. La inspección de ACF/PACF sugiere $p=2$,
+$q=2$.
+
+\begin{lstlisting}[caption={Ejemplo 1 --- ARIMA$(2,1,2)$ para AAPL}]
+# ── Datos (simulados; reemplazar por yfinance para datos reales) ──
+dates = pd.date_range("2020-01-01", "2024-12-31", freq='B')
+n = len(dates)
+trend    = np.linspace(300, 230, n)
+seasonal = 15 * np.sin(2*np.pi*np.arange(n)/252)
+noise    = np.random.randn(n).cumsum() * 2
+aapl = pd.Series(trend + seasonal + noise, index=dates, name="AAPL")
+
+# ── Estacionariedad ──────────────────────────────────────
+test_adf(aapl,            "AAPL nivel")   # p = 0.9013 -> NO estacionaria
+test_adf(aapl.diff(),     "AAPL 1a dif")  # p < 0.0001 -> estacionaria
+
+# ── ACF y PACF ───────────────────────────────────────────
+graficar_acf_pacf(aapl.diff().dropna(), "AAPL diff")
+
+# ── Seleccion de orden por AIC ───────────────────────────
+resultados = []
+for p in range(4):
+    for q in range(4):
+        try:
+            m = SARIMAX(aapl, order=(p,1,q), trend='n').fit(disp=False)
+            resultados.append({'p':p,'q':q,'AIC':m.aic,'BIC':m.bic})
+        except Exception:
+            pass
+df_aic = pd.DataFrame(resultados).sort_values('AIC').head(5)
+print(df_aic.to_string(index=False))
+
+# ── Ajuste ARIMA(2,1,2) ──────────────────────────────────
+modelo = SARIMAX(aapl, order=(2,1,2), trend='n')
+res    = modelo.fit(disp=False)
+print(f"AIC = {res.aic:.2f}  |  BIC = {res.bic:.2f}")
+print(res.params.round(4))
+
+# ── Pronostico 30 dias ───────────────────────────────────
+fc    = res.get_forecast(steps=30)
+media = fc.predicted_mean
+ic    = fc.conf_int(alpha=0.05)
+print(f"Pronostico dia 30: {media.iloc[-1]:.2f} USD")
+print(f"IC 95%: [{ic.iloc[-1,0]:.2f}, {ic.iloc[-1,1]:.2f}]")
+
+# ── Grafica pronostico ───────────────────────────────────
+plt.figure(figsize=(10,4))
+plt.plot(aapl[-120:].values, label='Historico')
+plt.plot(range(120, 150), media.values, color='red', label='Pronostico')
+plt.fill_between(range(120, 150),
+                 ic.iloc[:,0].values, ic.iloc[:,1].values,
+                 alpha=0.2, color='red', label='IC 95%')
+plt.title("AAPL - ARIMA(2,1,2): Pronostico 30 dias")
+plt.legend()
+plt.tight_layout()
+plt.savefig("fig_aapl_forecast.png", dpi=120)
+plt.show()
+\end{lstlisting}
+
+\textbf{Resultados obtenidos:}
+\begin{itemize}
+  \item $\hat{\phi}_1 = -0.0739$, \quad $\hat{\phi}_2 = -0.8667$
+  \item $\hat{\theta}_1 = \phantom{-}0.0568$, \quad $\hat{\theta}_2 = \phantom{-}0.8844$
+  \item $\hat{\sigma}^2 = 3.9115$
+  \item $\mathrm{AIC} = 5\,489.09$, \quad $\mathrm{BIC} = 5\,514.96$
+\end{itemize}
+
+\textbf{Interpretación.} Los coeficientes AR de orden 2 y MA de orden 2 capturan la
+dinámica de reversión y memoria corta del precio diario. La suma $\phi_1+\phi_2 \approx -0.94$
+indica que la serie diferenciada es casi estacionaria al borde. El $\hat{\sigma}^2 = 3.91$
+refleja la volatilidad diaria residual en dólares al cuadrado.
+
+% ─────────────────────────────────────────────────────────
+\subsection{Ejemplo 2: Bitcoin (BTC-USD) --- ARIMA$(1,1,1)$ en log-precio}
+% ─────────────────────────────────────────────────────────
+
+\textbf{Contexto.} Bitcoin es conocido por su alta volatilidad. Se modela el
+\emph{logaritmo} del precio para estabilizar la varianza (transformación Box-Cox con
+$\lambda=0$). Los retornos logarítmicos son estacionarios, confirmado por la prueba ADF.
+
+\begin{lstlisting}[caption={Ejemplo 2 --- ARIMA$(1,1,1)$ para BTC en log-precio}]
+# ── Datos BTC (log-precio simulado) ─────────────────────
+dates_btc = pd.date_range("2021-01-01", "2024-12-31", freq='B')
+n2 = len(dates_btc)
+btc_log = pd.Series(
+    np.cumsum(np.random.randn(n2) * 0.04) + np.log(35000),
+    index=dates_btc,
+    name="BTC_log"
+)
+
+# ── Estacionariedad ──────────────────────────────────────
+test_adf(btc_log,            "BTC log-precio") # NO estacionaria
+test_adf(btc_log.diff(),     "BTC log-retorno") # estacionaria
+
+# ── ACF y PACF ───────────────────────────────────────────
+graficar_acf_pacf(btc_log.diff().dropna(), "BTC log-retorno")
+
+# ── Ajuste ARIMA(1,1,1) ──────────────────────────────────
+modelo_btc = SARIMAX(btc_log, order=(1,1,1), trend='n')
+res_btc    = modelo_btc.fit(disp=False)
+print(f"AIC = {res_btc.aic:.2f}  |  BIC = {res_btc.bic:.2f}")
+print(res_btc.params.round(4))
+
+# ── Pronostico 14 dias (escala original USD) ─────────────
+fc_btc  = res_btc.get_forecast(steps=14)
+ic_btc  = fc_btc.conf_int(alpha=0.05)
+precio  = np.exp(fc_btc.predicted_mean.iloc[-1])
+p_lo    = np.exp(ic_btc.iloc[-1, 0])
+p_hi    = np.exp(ic_btc.iloc[-1, 1])
+print(f"BTC dia 14 (USD): ${precio:,.0f}")
+print(f"IC 95% (USD): [${p_lo:,.0f},  ${p_hi:,.0f}]")
+
+# ── Grafica retornos log ─────────────────────────────────
+plt.figure(figsize=(10,4))
+plt.plot(btc_log.diff().dropna().values, linewidth=0.6, color='#ff7f0e')
+plt.axhline(0, color='black', linewidth=0.5, linestyle='--')
+plt.title("BTC - Log-retornos diarios")
+plt.tight_layout()
+plt.savefig("fig_btc_returns.png", dpi=120)
+plt.show()
+\end{lstlisting}
+
+\textbf{Resultados obtenidos:}
+\begin{itemize}
+  \item $\hat{\phi}_1 = -0.2688$, \quad $\hat{\theta}_1 = 0.2882$
+  \item $\hat{\sigma}^2 = 0.0016$ (varianza del log-retorno)
+  \item $\mathrm{AIC} = -3\,776.34$, \quad $\mathrm{BIC} = -3\,761.49$
+\end{itemize}
+
+\textbf{Interpretación.} El componente AR$(1)$ negativo indica \emph{reversión a la
+media} de corto plazo en los retornos: un retorno positivo hoy tiende a ir seguido de
+un retorno ligeramente negativo mañana. El MA$(1)$ positivo captura autocorrelación
+positiva inmediata. La transformación logarítmica es esencial: sin ella, los residuos
+presentarían heterocedasticidad severa violando los supuestos del modelo.
+
+% ─────────────────────────────────────────────────────────
+\subsection{Ejemplo 3: S\&P~500 ETF (SPY) --- SARIMA$(1,1,1)(1,1,1)_{12}$}
+% ─────────────────────────────────────────────────────────
+
+\textbf{Contexto.} Se utilizan cierres \emph{mensuales} del SPY para detectar
+estacionalidad anual. Con $s=12$, el modelo SARIMA captura tanto la tendencia de largo
+plazo como los patrones de enero, verano y fin de año documentados en los mercados de
+renta variable.
+
+\begin{lstlisting}[caption={Ejemplo 3 --- SARIMA$(1,1,1)(1,1,1)_{12}$ para SPY mensual}]
+# ── Datos SPY mensual (log-precio simulado) ──────────────
+dates_spy = pd.date_range("2015-01", "2024-12", freq='ME')
+n3 = len(dates_spy)
+trend3    = np.linspace(np.log(2000), np.log(4800), n3)
+seasonal3 = 0.02 * np.sin(2*np.pi*np.arange(n3)/12)
+noise3    = np.random.randn(n3) * 0.02
+spy_log   = pd.Series(trend3 + seasonal3 + noise3,
+                      index=dates_spy, name="SPY_log")
+
+# ── Estacionariedad ──────────────────────────────────────
+test_adf(spy_log,        "SPY log-precio") # NO estacionaria
+test_adf(spy_log.diff(), "SPY log-retorno") # estacionaria
+
+# ── ACF y PACF (detectar estacionalidad en multiplos de 12) ──
+graficar_acf_pacf(spy_log.diff().dropna(), "SPY mensual", lags=24)
+
+# ── Ajuste SARIMA(1,1,1)(1,1,1)[12] ─────────────────────
+modelo_spy = SARIMAX(
+    spy_log,
+    order=(1, 1, 1),
+    seasonal_order=(1, 1, 1, 12),
+    trend='n'
+)
+res_spy = modelo_spy.fit(disp=False)
+print(f"AIC = {res_spy.aic:.2f}  |  BIC = {res_spy.bic:.2f}")
+print(res_spy.params.round(4))
+
+# ── Pronostico 12 meses (escala original USD) ─────────────
+fc_spy  = res_spy.get_forecast(steps=12)
+ic_spy  = fc_spy.conf_int(alpha=0.05)
+precio  = np.exp(fc_spy.predicted_mean.iloc[-1])
+p_lo    = np.exp(ic_spy.iloc[-1, 0])
+p_hi    = np.exp(ic_spy.iloc[-1, 1])
+print(f"SPY en 12 meses (USD): ${precio:,.0f}")
+print(f"IC 95% (USD): [${p_lo:,.0f},  ${p_hi:,.0f}]")
+
+# ── Grafica pronostico ───────────────────────────────────
+hist_vals = np.exp(spy_log.values)
+fc_vals   = np.exp(fc_spy.predicted_mean.values)
+ic_lo     = np.exp(ic_spy.iloc[:,0].values)
+ic_hi     = np.exp(ic_spy.iloc[:,1].values)
+
+plt.figure(figsize=(10,4))
+plt.plot(range(len(hist_vals)), hist_vals, label='Historico')
+x_fc = range(len(hist_vals), len(hist_vals)+12)
+plt.plot(x_fc, fc_vals, color='red', label='Pronostico')
+plt.fill_between(x_fc, ic_lo, ic_hi,
+                 alpha=0.2, color='red', label='IC 95%')
+plt.title("SPY - SARIMA(1,1,1)(1,1,1)[12]: Pronostico 12 meses")
+plt.legend()
+plt.tight_layout()
+plt.savefig("fig_spy_forecast.png", dpi=120)
+plt.show()
+\end{lstlisting}
+
+\textbf{Resultados obtenidos:}
+\begin{itemize}
+  \item AR regular:     $\hat{\phi}_1   = -0.0411$
+  \item MA regular:     $\hat{\theta}_1 = -0.9558$
+  \item AR estacional:  $\hat{\Phi}_1   = -0.1470$
+  \item MA estacional:  $\hat{\Theta}_1 = -0.8795$
+  \item $\hat{\sigma}^2 = 0.0004$
+  \item $\mathrm{AIC} = -508.29$, \quad $\mathrm{BIC} = -494.97$
+\end{itemize}
+
+\textbf{Interpretación.} El MA estacional fuerte ($\hat{\Theta}_1 \approx -0.88$) indica
+que el retorno del mes actual está negativamente correlacionado con el del mismo mes del
+año anterior, capturando la reversión estacional. Esto es consistente con el
+\emph{efecto enero} y la tendencia bajista de septiembre documentada históricamente
+en los mercados de renta variable.
+
+% ─────────────────────────────────────────────────────────
+\section{Comparación de Modelos}
+% ─────────────────────────────────────────────────────────
+
+\begin{table}[H]
+\centering
+\caption{Resumen comparativo de los tres modelos ajustados}
+\begin{tabular}{lllrrr}
+\toprule
+\textbf{Activo} & \textbf{Modelo} & \textbf{Frecuencia}
+  & \textbf{AIC} & \textbf{BIC} & $\hat{\sigma}^2$ \\
+\midrule
+AAPL & ARIMA$(2,1,2)$                    & Diaria   &  5\,489.09  &  5\,514.96  & 3.9115 \\
+BTC  & ARIMA$(1,1,1)$                    & Diaria   & $-$3\,776.34 & $-$3\,761.49 & 0.0016 \\
+SPY  & SARIMA$(1,1,1)(1,1,1)_{12}$       & Mensual  & $-$508.29   & $-$494.97   & 0.0004 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Nota.} Los valores de AIC y BIC solo son comparables dentro de la
+misma serie. No deben usarse para comparar modelos ajustados a distintas series o
+distintas frecuencias temporales.
+
+% ─────────────────────────────────────────────────────────
+\section{Conclusiones}
+% ─────────────────────────────────────────────────────────
+
+\begin{itemize}
+  \item El modelo $(S)ARIMA(p,d,q)(P,D,Q)_s$ generaliza de forma elegante los modelos
+        AR, MA e ARIMA incluyendo estacionalidad multiplicativa.
+  \item La \textbf{ACF} y la \textbf{PACF} son las principales herramientas de
+        identificación visual del orden del modelo.
+  \item Los criterios \textbf{AIC} y \textbf{BIC} permiten seleccionar el modelo más
+        parsimonioso con mejor ajuste.
+  \item En series financieras, la \textbf{transformación logarítmica} es prácticamente
+        obligatoria para cumplir los supuestos del modelo.
+  \item Para volatilidad condicional (varianza no constante), los modelos ARIMA deben
+        complementarse con modelos \textbf{GARCH}.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────
+\begin{thebibliography}{9}
+
+\bibitem{boxjenkins}
+Box, G.E.P., Jenkins, G.M., Reinsel, G.C., \& Ljung, G.M.\ (2015).
+\textit{Time Series Analysis: Forecasting and Control} (5th ed.). Wiley.
+
+\bibitem{hamilton}
+Hamilton, J.D.\ (1994). \textit{Time Series Analysis}. Princeton University Press.
+
+\bibitem{hyndman}
+Hyndman, R.J.\ \& Athanasopoulos, G.\ (2021).
+\textit{Forecasting: Principles and Practice} (3rd ed.).
+OTexts. \url{https://otexts.com/fpp3/}
+
+\bibitem{statsmodels}
+Seabold, S.\ \& Perktold, J.\ (2010).
+Statsmodels: Econometric and Statistical Modeling with Python.
+\textit{Proceedings of the 9th Python in Science Conference}.
+
+\end{thebibliography}
+
+\end{document}

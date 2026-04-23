@@ -1,0 +1,507 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{color,pxfonts,fix-cm}
+\usepackage{latexsym}
+\usepackage[mathletters]{ucs}
+\DeclareUnicodeCharacter{62}{\textgreater}
+\DeclareUnicodeCharacter{60}{\textless}
+\usepackage[Helvetica,DejaVuSans-Bold,DejaVuSans,T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{pict2e}
+\usepackage{wasysym}
+\usepackage[english]{babel}
+\usepackage{tikz}
+\pagestyle{empty}
+\usepackage[margin=0in,paperwidth=612pt,paperheight=792pt]{geometry}
+\begin{document}
+\definecolor{color_62718}{rgb}{0.121569,0.372549,0.74902}
+\definecolor{color_29791}{rgb}{0,0,0}
+\definecolor{color_273076}{rgb}{0.960784,0.960784,0.960784}
+\definecolor{color_217147}{rgb}{0.737255,0.815686,0.941177}
+\definecolor{color_249244}{rgb}{0.866667,0.866667,0.866667}
+\begin{tikzpicture}[overlay]\path(0pt,0pt);\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(32.76,-44){\fontsize{12}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Sección 1: Procesos Estacionarios y Fundamentos}
+\put(32.76,-62.79999){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Ejercicio 1.1 — Estacionariedad, ACF y PACF}
+\put(32.76,-80.59998){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(a) Definiciones de Estacionariedad}
+\put(32.76,-96.89996){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Estacionariedad débil (de covarianza): El proceso \{Yₜ\}ₜ∈ℤ es débilmente estacionario si cumple:}
+\put(32.76,-114.6){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(i) E[Yₜ] = μ para todo t (media constante).}
+\put(32.76,-130.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(ii) Cov(Yₜ, Yₜ₋ₖ) = γ(k) depende solo del rezago k, no de t.}
+\put(32.76,-147.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Estacionariedad estricta: La distribución conjunta de (Yₜ₁, ..., Yₜₘ) es igual a la de (Yₜ₁₊ₕ, ..., Yₜₘ₊ₕ)}
+\put(32.76,-160.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}para todo h y toda elección de índices.}
+\put(32.76,-177.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Ejemplo: Sea Yₜ = εₜ · εₜ₋₁ donde εₜ son i.i.d. con distribución de Cauchy estándar (media infinita).}
+\put(32.76,-190.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Entonces E[Yₜ] no existe en sentido usual, pero se puede construir un proceso con media cero,}
+\put(32.76,-203.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}varianza constante y covarianzas dependientes solo del rezago — débilmente estacionario — cuya}
+\put(32.76,-217.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}distribución marginal no es la misma que la conjunta para distintos t (por ejemplo, si εₜ ~ N(0,1) ×}
+\put(32.76,-230.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}t-Student, la distribución conjunta cambia con el tiempo). Un ejemplo más limpio: Yₜ ~}
+\put(32.76,-243.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Uniforme(0,1) i.i.d. → estrictamente estacionario. Pero si Yₜ = Xₜ + aₜ donde Xₜ es i.i.d. N(0,1) y aₜ}
+\put(32.76,-256.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}alterna entre 0 y c con período 2 pero con c tal que la media sigue siendo 0, entonces E[Yₜ]=0 y}
+\put(32.76,-269.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}γ(k) no depende de t (débilmente estacionario), pero la distribución marginal es bimodal en}
+\put(32.76,-283.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}períodos pares y normal en impares → no estrictamente estacionario.}
+\put(32.76,-300.8){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(b) Demostración: |ρ(k)| ≤ 1 y ρ(k) = ρ(−k)}
+\put(32.76,-317.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Definición: ρ(k) = γ(k)/γ(0), donde γ(k) = Cov(Yₜ, Yₜ₋ₖ) y γ(0) = Var(Yₜ) > 0.}
+\put(32.76,-333.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Prueba de |ρ(k)| ≤ 1: Por la desigualdad de Cauchy-Schwarz:}
+\put(32.76,-350.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}|Cov(Yₜ, Yₜ₋ₖ)|² ≤ Var(Yₜ) · Var(Yₜ₋ₖ) = γ(0)²}
+\put(32.76,-367.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}⟹ |γ(k)|² ≤ γ(0)² ⟹ |γ(k)/γ(0)| ≤ 1 ⟹ |ρ(k)| ≤ 1. □}
+\put(32.76,-383.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Prueba de ρ(k) = ρ(−k): La covarianza es simétrica:}
+\put(32.76,-400.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}γ(k) = Cov(Yₜ, Yₜ₋ₖ) = E[(Yₜ−μ)(Yₜ₋ₖ−μ)]}
+\put(32.76,-417.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}γ(−k) = Cov(Yₜ, Yₜ₊ₖ) = E[(Yₜ−μ)(Yₜ₊ₖ−μ)]}
+\put(32.76,-434){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Sustituyendo s = t−k en γ(k): Cov(Yₛ₊ₖ, Yₛ) = E[(Yₛ₊ₖ−μ)(Yₛ−μ)] = γ(−k).}
+\put(32.76,-450.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Por estacionariedad débil, γ(k) = γ(−k) ⟹ ρ(k) = ρ(−k). □}
+\put(32.76,-468.4){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(c) AR(1): cálculo de Var(Yₜ), Cov(Yₜ,Yₜ₋₁) y demostración ρ(k) = 0.6ᵏ}
+\put(32.76,-484.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Modelo: Yₜ = 0.6 Yₜ₋₁ + εₜ, εₜ ~ WN(0,σ²), |0.6| < 1 → proceso estacionario.}
+\put(32.76,-501.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Varianza:}
+\put(32.76,-518.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Var(Yₜ) = 0.6² Var(Yₜ₋₁) + Var(εₜ)}
+\put(32.76,-534.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}γ(0) = 0.36 γ(0) + σ²}
+\put(32.76,-551.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}γ(0)(1 − 0.36) = σ² ⟹ γ(0) = σ²/(1 − 0.36) = σ²/0.64}
+\put(32.76,-568.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ Var(Yₜ) = σ²/0.64 = 25σ²/16}
+\put(32.76,-584.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Covarianza Cov(Yₜ, Yₜ₋₁) = γ(1):}
+\put(32.76,-601.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}γ(1) = Cov(Yₜ, Yₜ₋₁) = Cov(0.6Yₜ₋₁ + εₜ, Yₜ₋₁)}
+\put(32.76,-618.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}= 0.6 Var(Yₜ₋₁) + Cov(εₜ, Yₜ₋₁) = 0.6 γ(0) + 0}
+\put(32.76,-635){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ γ(1) = 0.6 · σ²/0.64 = 0.9375σ²}
+\put(32.76,-651.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Demostración ρ(k) = 0.6ᵏ por inducción:}
+\put(32.76,-668.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Por definición: ρ(k) = γ(k)/γ(0). Multiplicando la ecuación del modelo por Yₜ₋ₖ y tomando esperanza:}
+\put(32.76,-685.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}γ(k) = 0.6 γ(k−1) para k ≥ 1}
+\put(32.76,-701.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ρ(k) = γ(k)/γ(0) = 0.6 γ(k−1)/γ(0) = 0.6 ρ(k−1)}
+\put(32.76,-718.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Resolviendo la recurrencia con ρ(0) = 1:}
+\put(32.76,-735.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ ρ(k) = 0.6ᵏ para k ≥ 0. □}
+\end{picture}
+\newpage
+\begin{tikzpicture}[overlay]\path(0pt,0pt);\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(32.76,-42.79999){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(d) Patrones de ACF y PACF: AR(1), MA(1) y ruido blanco}
+\end{picture}
+\begin{tikzpicture}[overlay]
+\path(0pt,0pt);
+\filldraw[color_273076][even odd rule]
+(35.4pt, -51.79999pt) -- (546.6pt, -51.79999pt)
+ -- (546.6pt, -51.79999pt)
+ -- (546.6pt, -87.39996pt)
+ -- (546.6pt, -87.39996pt)
+ -- (35.4pt, -87.39996pt) -- cycle
+;
+\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(39.4,-66.59998){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Proceso}
+\put(111.4,-66.59998){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}ACF}
+\put(269.8,-66.59998){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}PACF}
+\put(413.8,-66.59998){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Utilidad para}
+\put(413.8,-80.39996){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}identificar}
+\put(39.4,-101.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}AR(1) ϕ}
+\put(78.26138,-101.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}>}
+\put(86.89165,-101.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}0}
+\put(111.4,-101.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Decae exponencialmente:}
+\put(111.4,-114.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ρ(k)=ϕᵏ → 0}
+\put(269.8,-101.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Se corta abruptamente en}
+\put(269.8,-114.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}k=1; α(k)≈0 para k}
+\put(369.5762,-114.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}>}
+\put(378.2065,-114.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}1}
+\put(413.8,-101.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}El corte en PACF indica}
+\put(413.8,-114.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}el orden p=1}
+\put(39.4,-136.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}MA(1) θ}
+\put(79.49858,-136.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}>}
+\put(88.12886,-136.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}0}
+\put(111.4,-136.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Se corta en k=1: ρ(1)≠0,}
+\put(111.4,-149.2999){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ρ(k)=0 para k}
+\put(183.0323,-149.2999){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}>}
+\put(191.6626,-149.2999){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}1}
+\put(269.8,-136.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Decae exponencialmente}
+\put(269.8,-149.2999){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(alternando signos)}
+\put(413.8,-136.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}El corte en ACF indica el}
+\put(413.8,-149.2999){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}orden q=1}
+\put(39.4,-170.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Ruido}
+\put(39.4,-183.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Blanco}
+\put(111.4,-170.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ρ(k)≈0 para todo k≥1}
+\put(111.4,-183.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(dentro de bandas ±1.96/√T)}
+\put(269.8,-170.4999){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}α(k)≈0 para todo k≥1}
+\put(413.8,-170.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}No hay estructura; εₜ ~}
+\put(413.8,-183.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}WN}
+\end{picture}
+\begin{tikzpicture}[overlay]
+\path(0pt,0pt);
+\draw[color_217147,line width=0.6pt,line cap=round,line join=round]
+(35.4pt, -87.39996pt) -- (546.6pt, -87.39996pt)
+;
+\draw[color_249244,line width=0.25pt,line cap=round,line join=round]
+(35.4pt, -121.8pt) -- (546.6pt, -121.8pt)
+;
+\draw[color_249244,line width=0.25pt,line cap=round,line join=round]
+(35.4pt, -156.2pt) -- (546.6pt, -156.2pt)
+;
+\draw[color_249244,line width=0.25pt,line cap=round,line join=round]
+(35.4pt, -190.6pt) -- (546.6pt, -190.6pt)
+;
+\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(32.76,-205.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Razón de la utilidad: La ACF identifica el orden MA (corte abrupto) y la PACF identifica el orden AR}
+\put(32.76,-219.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(corte abrupto). Para ARMA(p,q), ambas decaen gradualmente, lo que exige criterios como AIC/BIC}
+\put(32.76,-232.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}para seleccionar los órdenes.}
+\put(32.76,-250){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Ejercicio 1.2 — Procesos AR, MA y ARMA}
+\put(32.76,-267.8){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(a) Raíces del AR(2): Yₜ = 1.2Yₜ₋₁ − 0.32Yₜ₋₂ + εₜ}
+\put(32.76,-284.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Polinomio característico: Φ(z) = 1 − 1.2z + 0.32z²}
+\put(32.76,-300.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Se resuelve 0.32z² − 1.2z + 1 = 0, multiplicando por 100: 32z² − 120z + 100 = 0, ÷4: 8z² − 30z +}
+\put(32.76,-314){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}25 = 0}
+\put(32.76,-330.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}z = [30 ± √(900 − 800)] / 16 = [30 ± √100] / 16 = [30 ± 10] / 16}
+\put(32.76,-347.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}z₁ = 40/16 = 2.5, z₂ = 20/16 = 1.25}
+\put(32.76,-364.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ Raíces: z₁ = 2.5 y z₂ = 1.25. Ambas están fuera del círculo unitario (|z|}
+\put(409.4795,-364.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}>}
+\put(418.1098,-364.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}1). ⟹ Proceso}
+\put(32.76,-377.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ESTACIONARIO.}
+\put(32.76,-395){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(b) MA(2): varianzas y covarianzas}
+\put(32.76,-411.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Modelo: Yₜ = εₜ + 0.5εₜ₋₁ − 0.3εₜ₋₂, con Var(εₜ) = σ²}
+\put(32.76,-428){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Varianza:}
+\put(32.76,-444.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Var(Yₜ) = σ²(1 + 0.5² + 0.3²) = σ²(1 + 0.25 + 0.09) = 1.34σ²}
+\put(32.76,-461.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ γ(0) = 1.34σ²}
+\put(32.76,-478.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Cov(Yₜ, Yₜ₋₁):}
+\put(32.76,-494.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}γ(1) = E[YₜYₜ₋₁] = E[(εₜ + 0.5εₜ₋₁ − 0.3εₜ₋₂)(εₜ₋₁ + 0.5εₜ₋₂ − 0.3εₜ₋₃)]}
+\put(32.76,-511.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}= 0.5σ² + (−0.3)(0.5)σ² = 0.5σ² − 0.15σ² = 0.35σ²}
+\put(32.76,-528.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ γ(1) = 0.35σ², ρ(1) = 0.35/1.34 ≈ 0.261}
+\put(32.76,-544.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Cov(Yₜ, Yₜ₋₂):}
+\put(32.76,-561.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}γ(2) = (−0.3)σ² = −0.3σ²}
+\put(32.76,-578.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ γ(2) = −0.3σ², ρ(2) = −0.3/1.34 ≈ −0.224}
+\put(32.76,-595){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Cov(Yₜ, Yₜ₋ₖ) para k ≥ 3:}
+\put(32.76,-611.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}γ(k) = 0 para k ≥ 3}
+\put(32.76,-628.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(Los términos εₜ y εₜ₋ₖ son independientes cuando k > q = 2.)}
+\put(32.76,-646.1){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(c) Invertibilidad de MA(q)}
+\put(32.76,-662.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Un proceso MA(q) es invertible si y solo si las raíces del polinomio de medias móviles}
+\put(32.76,-679.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Θ(z) = 1 + θ₁z + θ₂z² + ··· + θqzq}
+\put(32.76,-695.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}tienen módulo mayor que 1 (están fuera del círculo unitario).}
+\put(32.76,-712.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Importancia para el pronóstico: La invertibilidad garantiza que el proceso admite una}
+\put(32.76,-725.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}representación AR(∞) convergente: εₜ = Σⱼ πⱼ Yₜ₋ⱼ. Esto permite expresar los errores en términos de}
+\end{picture}
+\newpage
+\begin{tikzpicture}[overlay]\path(0pt,0pt);\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(32.76,-42.30005){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}observaciones pasadas, haciendo que el pronóstico sea operacional (no requiere observaciones}
+\put(32.76,-55.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}infinitamente lejanas). Sin invertibilidad, el pronóstico óptimo no puede calcularse en la práctica.}
+\put(32.76,-73.20001){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(d) Representación MA(∞) del AR(1)}
+\put(32.76,-89.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Si |ϕ| < 1, el AR(1): Yₜ = ϕYₜ₋₁ + εₜ puede iterarse hacia atrás:}
+\put(32.76,-106.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Yₜ = ϕYₜ₋₁ + εₜ}
+\put(32.76,-122.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}= ϕ(ϕYₜ₋₂ + εₜ₋₁) + εₜ = ϕ²Yₜ₋₂ + ϕεₜ₋₁ + εₜ}
+\put(32.76,-139.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}= ϕⁿYₜ₋ₙ + Σⱼ₌₀ⁿ⁻¹ ϕʲ εₜ₋ⱼ}
+\put(32.76,-156.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Cuando n → ∞, como |ϕ| < 1, ϕⁿYₜ₋ₙ → 0 en media cuadrática (pues Var(ϕⁿYₜ₋ₙ) = ϕ²ⁿγ(0) → 0).}
+\put(32.76,-169.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Entonces:}
+\put(32.76,-186.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Yₜ = Σⱼ₌₀\^∞ ϕʲ εₜ₋ⱼ}
+\put(32.76,-202.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}La serie converge en media cuadrática ya que Σⱼ₌₀\^∞ ϕ²ʲ = 1/(1−ϕ²) < ∞.}
+\put(32.76,-219.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ Yₜ = Σⱼ₌₀\^∞ ϕʲ εₜ₋ⱼ (representación MA(∞), convergente para |ϕ|}
+\put(371.1412,-219.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}<}
+\put(379.7715,-219.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}1). □}
+\put(32.76,-237.3){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Ejercicio 1.3 — Raíces Unitarias y Prueba de Dickey-Fuller}
+\put(32.76,-255.1){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(a) La caminata aleatoria no es estacionaria}
+\put(32.76,-271.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Modelo: Yₜ = Yₜ₋₁ + εₜ, con Y₀ = 0 (condición inicial).}
+\put(32.76,-288.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Por iteración: Yₜ = Σⱼ₌₁ᵗ εⱼ}
+\put(32.76,-304.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Varianza: Var(Yₜ) = Var(Σⱼ₌₁ᵗ εⱼ) = tσ²}
+\put(32.76,-321.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}⟹ Var(Yₜ) = tσ² → ∞ cuando t → ∞.}
+\put(32.76,-338.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Como la varianza no es constante en el tiempo, el proceso NO es estacionario. □}
+\put(32.76,-354.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Covarianza:}
+\put(32.76,-371.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Cov(Yₜ, Yₛ) = Cov(Σⱼ₌₁ᵗ εⱼ, Σₖ₌₁ˢ εₖ) = min(s,t)·σ²}
+\put(32.76,-388.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(pues Cov(εⱼ,εₖ) = σ² si j=k, 0 si j≠k, y hay min(s,t) términos comunes). □}
+\put(32.76,-406){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(b) Primera diferencia de la caminata aleatoria}
+\put(32.76,-422.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ΔYₜ = Yₜ − Yₜ₋₁ = (Yₜ₋₁ + εₜ) − Yₜ₋₁ = εₜ}
+\put(32.76,-439){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ ΔYₜ = εₜ ~ WN(0,σ²). La primera diferencia es ruido blanco → estacionaria. □}
+\put(32.76,-456.7){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(c) Distribución no estándar del estadístico ADF bajo H₀}
+\put(32.76,-473){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}La ecuación ADF es: ΔYₜ = μ + δYₜ₋₁ + Σⱼ₌₁ᵏ ψⱼΔYₜ₋ⱼ + εₜ}
+\put(32.76,-489.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}H₀: δ = 0 (raíz unitaria) vs. H₁: δ < 0 (estacionario).}
+\put(32.76,-506.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Razón de la distribución no estándar: Bajo H₀, Yₜ₋₁ es una caminata aleatoria (no estacionaria). El}
+\put(32.76,-519.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}OLS de δ̂ involucra Σ Yₜ₋₁ΔYₜ / Σ Yₜ₋₁². Como Yₜ₋₁ es I(1), sus sumas parciales convergen a un}
+\put(32.76,-532.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}movimiento Browniano (proceso de Wiener W(r)), no a una distribución normal. En particular:}
+\put(32.76,-549.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}T·δ̂ → [∫₀¹ W(r)dW(r)] / [∫₀¹ W(r)² dr]}
+\put(32.76,-566.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Esta distribución (funcional del Browniano) no tiene forma cerrada normal ni t-Student. Los valores}
+\put(32.76,-579.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}críticos se obtienen por simulación (tablas de Dickey-Fuller). Si se usara la tabla t normal, se}
+\put(32.76,-592.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}rechazaría H₀ con demasiada frecuencia.}
+\put(32.76,-610.3){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(d) Log-precios I(1) y log-retornos I(0)}
+\put(32.76,-626.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Log-precio I(1): pₜ = log(Pₜ) sigue una caminata aleatoria aproximada: pₜ = pₜ₋₁ + εₜ. Tiene varianza}
+\put(32.76,-639.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}creciente en el tiempo → no estacionaria (raíz unitaria).}
+\put(32.76,-656.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Log-retorno I(0): rₜ = pₜ − pₜ₋₁ = Δpₜ = εₜ es estacionario (media y varianza constantes).}
+\put(32.76,-673.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Implicaciones para modelado y predicción:}
+\put(32.76,-689.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• Se modela rₜ (retornos) con ARMA, no pₜ directamente.}
+\put(32.76,-706.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• Pronosticar pₜ directamente es problemático: los intervalos de predicción crecen ilimitadamente}
+\put(32.76,-719.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(√t).}
+\put(32.76,-736.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• La hipótesis de mercados eficientes implica que rₜ ≈ WN → muy poca autocorrelación en retornos.}
+\end{picture}
+\newpage
+\begin{tikzpicture}[overlay]\path(0pt,0pt);\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(32.76,-42.29999){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• La cointegración permite modelar combinaciones lineales estacionarias de series I(1).}
+\put(32.76,-63.20001){\fontsize{12}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Sección 2: Modelos ARIMA(p, d, q)}
+\put(32.76,-82){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Ejercicio 2.1 — Identificación, Estimación y Diagnóstico}
+\put(32.76,-99.79999){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(a) Identificación de órdenes por ACF y PACF}
+\end{picture}
+\begin{tikzpicture}[overlay]
+\path(0pt,0pt);
+\filldraw[color_273076][even odd rule]
+(42.6pt, -108.8pt) -- (539.4pt, -108.8pt)
+ -- (539.4pt, -108.8pt)
+ -- (539.4pt, -130.6pt)
+ -- (539.4pt, -130.6pt)
+ -- (42.6pt, -130.6pt) -- cycle
+;
+\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(46.6,-123.6){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Patrón}
+\put(205,-123.6){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Diagnóstico}
+\put(428.2,-123.6){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Modelo sugerido}
+\put(46.6,-144.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ACF decae}
+\put(46.6,-158.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}exponencialmente; PACF se}
+\put(46.6,-171.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}corta en rezago 2}
+\put(205,-144.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}PACF con corte abrupto en k=2 →}
+\put(205,-158.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}componente AR de orden 2}
+\put(428.2,-144.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}AR(2)}
+\put(46.6,-192.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ACF se corta en rezago 1;}
+\put(46.6,-205.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}PACF decae}
+\put(46.6,-218.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}exponencialmente}
+\put(205,-192.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ACF con corte abrupto en k=1 →}
+\put(205,-205.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}componente MA de orden 1}
+\put(428.2,-192.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}MA(1)}
+\put(46.6,-240.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Ambas ACF y PACF decaen}
+\put(46.6,-253.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}sin cortarse abruptamente}
+\put(205,-240.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Decaimiento gradual en ambas → mezcla}
+\put(205,-253.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}AR y MA}
+\put(428.2,-240.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ARMA(p,q) con p,q}
+\put(428.2,-253.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}≥ 1}
+\put(46.6,-274.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ACF pico significativo solo en}
+\put(46.6,-287.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}rezago 1, ≈0 después}
+\put(205,-274.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ACF se corta en k=1 → MA(1) puro}
+\put(428.2,-274.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}MA(1)}
+\end{picture}
+\begin{tikzpicture}[overlay]
+\path(0pt,0pt);
+\draw[color_217147,line width=0.6pt,line cap=round,line join=round]
+(42.6pt, -130.6pt) -- (539.4pt, -130.6pt)
+;
+\draw[color_249244,line width=0.25pt,line cap=round,line join=round]
+(42.6pt, -178.2pt) -- (539.4pt, -178.2pt)
+;
+\draw[color_249244,line width=0.25pt,line cap=round,line join=round]
+(42.6pt, -225.8pt) -- (539.4pt, -225.8pt)
+;
+\draw[color_249244,line width=0.25pt,line cap=round,line join=round]
+(42.6pt, -260.2pt) -- (539.4pt, -260.2pt)
+;
+\draw[color_249244,line width=0.25pt,line cap=round,line join=round]
+(42.6pt, -294.6pt) -- (539.4pt, -294.6pt)
+;
+\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(32.76,-314.4){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(b) Criterios AIC y BIC}
+\put(32.76,-330.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}AIC = −2 log L̂ + 2k}
+\put(32.76,-347.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}BIC = −2 log L̂ + k·log(n)}
+\put(32.76,-364.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}donde L̂ es la verosimilitud maximizada, k el número de parámetros y n el tamaño de muestra.}
+\put(32.76,-380.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Diferencia: El BIC penaliza más la complejidad cuando log(n) > 2, es decir, cuando n > e² ≈ 7.39.}
+\put(32.76,-394){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Para muestras financieras típicas (n ≥ 100), BIC penaliza mucho más que AIC, favoreciendo}
+\put(32.76,-407.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}modelos más parsimoniosos. AIC puede sobreajustar con muestras grandes.}
+\put(32.76,-424.9){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(c) Procedimiento de Box-Jenkins en tres etapas}
+\put(32.76,-441.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Etapa 1 — Identificación: Graficar Yₜ vs t para ver tendencia/estacionalidad. Calcular y graficar ACF}
+\put(32.76,-454.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}y PACF. Si la ACF decae lento, aplicar diferencias (ΔYₜ). Usar las tablas de patrones ACF/PACF para}
+\put(32.76,-467.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}proponer p, d, q candidatos.}
+\put(32.76,-484.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Etapa 2 — Estimación: Estimar los parámetros del modelo propuesto por Máxima Verosimilitud (MV)}
+\put(32.76,-497.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}o mínimos cuadrados condicionales. Obtener los residuos ε̂ₜ.}
+\put(32.76,-514.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Etapa 3 — Diagnóstico: Graficar residuos vs tiempo (homoscedasticidad). Calcular ACF y PACF de}
+\put(32.76,-527.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}los residuos (deben ser ≈ 0). Aplicar la prueba de Ljung-Box para verificar ruido blanco. Si los}
+\put(32.76,-540.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}residuos no son WN, revisar los órdenes y regresar a etapa 1.}
+\put(32.76,-558.3){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(d) Prueba de Ljung-Box}
+\put(32.76,-574.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Q = n(n+2) Σₖ₌₁ʰ ρ̂ₖ²/(n−k) ~ χ²(h−p−q) bajo H₀}
+\put(32.76,-591.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Se usa h = min(10, n/5) rezagos para equilibrar poder estadístico y consistencia.}
+\put(32.76,-608){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Aplicación: Si el p-valor de Q es < 0.05, se rechaza H₀ (los residuos no son WN) → el modelo tiene}
+\put(32.76,-621.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}estructura no capturada → aumentar p o q.}
+\put(32.76,-638.9){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Ejercicio 2.2 — ARIMA(1,1,1) para Log-precios de una Acción}
+\put(32.76,-656.7){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(a) Conversión a ARMA(1,1) para retornos rₜ = Δyₜ}
+\put(32.76,-673){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Sea rₜ = Δyₜ = yₜ − yₜ₋₁. El modelo ARIMA(1,1,1) es:}
+\put(32.76,-689.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(1 − ϕ₁B)(1−B)yₜ = (1+θ₁B)εₜ}
+\put(32.76,-706.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Sustituyendo (1−B)yₜ = rₜ:}
+\put(32.76,-723.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(1 − ϕ₁B)rₜ = (1+θ₁B)εₜ}
+\end{picture}
+\newpage
+\begin{tikzpicture}[overlay]\path(0pt,0pt);\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(32.76,-42.29999){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}rₜ − ϕ₁rₜ₋₁ = εₜ + θ₁εₜ₋₁}
+\put(32.76,-59){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ rₜ = ϕ₁rₜ₋₁ + εₜ + θ₁εₜ₋₁ → ARMA(1,1) para los retornos.}
+\put(32.76,-76.70001){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(b) Pronóstico r̂ₜ₊₁|ₜ con ϕ̂₁ = 0.15, θ̂₁ = −0.08}
+\put(32.76,-93){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}El pronóstico un paso adelante del ARMA(1,1) es:}
+\put(32.76,-109.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}r̂ₜ₊₁|ₜ = E[rₜ₊₁ | Iₜ] = ϕ̂₁ rₜ + θ̂₁ εₜ}
+\put(32.76,-126.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Nótese que en la ecuación de la tarea se escribe ϕ̂₁θ̂₁εₜ₋₁, lo que corresponde a la forma extendida.}
+\put(32.76,-143.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}La forma general: r̂ₜ₊₁|ₜ = ϕ̂₁ rₜ + θ̂₁ ε̂ₜ}
+\put(32.76,-159.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}r̂ₜ₊₁|ₜ = (0.15)rₜ + (−0.08)ε̂ₜ}
+\put(32.76,-176.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ r̂ₜ₊₁|ₜ = 0.15 rₜ − 0.08 ε̂ₜ}
+\put(32.76,-194.2){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(c) Intervalo de predicción al 95\% y traducción a Pₜ₊₁}
+\put(32.76,-210.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}IC 95\%: r̂ₜ₊₁|ₜ ± 1.96 σ̂}
+\put(32.76,-227.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Límite inferior (LI): r̂ₜ₊₁|ₜ − 1.96σ̂}
+\put(32.76,-243.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Límite superior (LS): r̂ₜ₊₁|ₜ + 1.96σ̂}
+\put(32.76,-260.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Traducción a precio: Como rₜ₊₁ = log(Pₜ₊₁) − log(Pₜ), entonces Pₜ₊₁ = Pₜ·exp(rₜ₊₁):}
+\put(32.76,-277.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}IC 95\% para Pₜ₊₁: [Pₜ · exp(r̂ₜ₊₁|ₜ − 1.96σ̂), Pₜ · exp(r̂ₜ₊₁|ₜ + 1.96σ̂)]}
+\put(32.76,-294){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}? El intervalo en precios es asimétrico porque la función exponencial no es lineal.}
+\put(32.76,-311.7){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(d) Asimetría en volatilidad}
+\put(32.76,-328){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}El ARIMA(1,1,1) NO captura el efecto de asimetría en volatilidad ("leverage effect"), que se refiere a}
+\put(32.76,-341.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}que caídas del mercado generan más volatilidad que subidas equivalentes.}
+\put(32.76,-357.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Razón: El ARIMA(1,1,1) modela la media condicional de los retornos con varianza constante σ². No}
+\put(32.76,-371.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}permite que σ² varíe en función del signo de los retornos pasados.}
+\put(32.76,-387.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Extensión necesaria: Un modelo EGARCH (Nelson, 1991) o GJR-GARCH que permite que la}
+\put(32.76,-401){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}volatilidad responda asimétricamente a shocks positivos y negativos. La especificación EGARCH}
+\put(32.76,-414.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}incluye el término log(σₜ²) = ω + α(|εₜ₋₁|/σₜ₋₁) + γ(εₜ₋₁/σₜ₋₁) + β log(σₜ₋₁²), donde γ < 0 captura la}
+\put(32.76,-427.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}asimetría.}
+\put(32.76,-445.1){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Ejercicio 2.3 — Pronóstico con ARIMA(2,1,0) Horizonte Múltiple}
+\put(32.76,-462.9){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(a) Definición Wₜ = ΔYₜ y ecuación AR(2)}
+\put(32.76,-479.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Modelo ARIMA(2,1,0): (1 − ϕ₁B − ϕ₂B²)(1−B)Yₜ = εₜ con ϕ₁=0.5, ϕ₂=−0.2}
+\put(32.76,-495.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Sea Wₜ = ΔYₜ = Yₜ − Yₜ₋₁. Entonces:}
+\put(32.76,-512.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(1 − 0.5B + 0.2B²)Wₜ = εₜ}
+\put(32.76,-529.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ Wₜ = 0.5Wₜ₋₁ − 0.2Wₜ₋₂ + εₜ → AR(2) para Wₜ}
+\put(32.76,-547){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(b) Pronósticos Ŵₜ₊₁|ₜ y Ŵₜ₊₂|ₜ}
+\put(32.76,-563.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Datos: Yₜ=100, Wₜ=1.2, Wₜ₋₁=0.8}
+\put(32.76,-580){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Ŵₜ₊₁|ₜ = 0.5 Wₜ − 0.2 Wₜ₋₁ = 0.5(1.2) − 0.2(0.8) = 0.60 − 0.16 = 0.44}
+\put(32.76,-596.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Ŵₜ₊₂|ₜ = 0.5 Ŵₜ₊₁|ₜ − 0.2 Wₜ = 0.5(0.44) − 0.2(1.2) = 0.22 − 0.24 = −0.02}
+\put(32.76,-613.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ Ŵₜ₊₁|ₜ = 0.44, Ŵₜ₊₂|ₜ = −0.02}
+\put(32.76,-631.1){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(c) ECM de predicción y coeficientes ψⱼ}
+\put(32.76,-647.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Los coeficientes impulso-respuesta del AR(2) son:}
+\put(32.76,-664.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ψ₀ = 1}
+\put(32.76,-680.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ψ₁ = ϕ₁ = 0.5}
+\put(32.76,-697.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ψ₂ = ϕ₁ψ₁ + ϕ₂ψ₀ = 0.5(0.5) + (−0.2)(1) = 0.25 − 0.20 = 0.05}
+\put(32.76,-714.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ECM a horizonte h (para Wₜ):}
+\put(32.76,-730.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}MSE₁ = σ²·ψ₀² = 1·1 = 1}
+\end{picture}
+\newpage
+\begin{tikzpicture}[overlay]\path(0pt,0pt);\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(32.76,-42.29999){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}MSE₂ = σ²(ψ₀² + ψ₁²) = 1·(1 + 0.25) = 1.25}
+\put(32.76,-59){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}MSE₃ = σ²(ψ₀² + ψ₁² + ψ₂²) = 1·(1 + 0.25 + 0.0025) = 1.2525}
+\put(32.76,-75.69995){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ ψ₀=1, ψ₁=0.5, ψ₂=0.05; MSE₁=1, MSE₂=1.25}
+\put(32.76,-93.40002){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(d) Intervalos de predicción al 95\% para Wₜ y Yₜ}
+\put(32.76,-109.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}IC 95\% para Wₜ₊₁: 0.44 ± 1.96·√1 = 0.44 ± 1.96 → [−1.52, 2.36]}
+\put(32.76,-126.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}IC 95\% para Wₜ₊₂: −0.02 ± 1.96·√1.25 = −0.02 ± 2.191 → [−2.211, 2.171]}
+\put(32.76,-143.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Traducción a intervalos para Yₜ (acumulando diferencias):}
+\put(32.76,-159.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Ŷₜ₊₁|ₜ = Yₜ + Ŵₜ₊₁|ₜ = 100 + 0.44 = 100.44}
+\put(32.76,-176.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}IC 95\% para Yₜ₊₁: [100 + (−1.52), 100 + 2.36] = [98.48, 102.36]}
+\put(32.76,-193.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Ŷₜ₊₂|ₜ = Yₜ + Ŵₜ₊₁|ₜ + Ŵₜ₊₂|ₜ = 100 + 0.44 + (−0.02) = 100.42}
+\put(32.76,-209.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}IC 95\% para Yₜ₊₂: [100.42 − √(1+1.25)·1.96, 100.42 + √(1+1.25)·1.96]}
+\put(32.76,-226.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}√(MSE₁+MSE₂)... (se acumula incertidumbre) → [100.42 − 2.94, 100.42 + 2.94] ≈ [97.48, 103.36]}
+\put(32.76,-243.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}? El intervalo para Yₜ₊₂ es más amplio que el de Yₜ₊₁ porque la incertidumbre se acumula.}
+\put(32.76,-261){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Ejercicio 2.4 — Cointegración y Spreads Estadísticos}
+\put(32.76,-278.8){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(a) Teorema de Representación de Granger}
+\put(32.76,-295.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Si Yₜ y Xₜ son ambas I(1) y cointegradas con vector (1,−β), entonces existe una representación de}
+\put(32.76,-308.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}corrección de error (ECM):}
+\put(32.76,-325){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ΔYₜ = α(Yₜ₋₁ − βXₜ₋₁) + Σⱼ γⱼΔYₜ₋ⱼ + Σⱼ δⱼΔXₜ₋ⱼ + εₜ}
+\put(32.76,-341.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Término de corrección α(Yₜ₋₁ − βXₜ₋₁): Mide cuánto se desvió el sistema del equilibrio a largo plazo}
+\put(32.76,-354.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}en t−1. Si Yₜ₋₁ − βXₜ₋₁ > 0 (Yₜ está por encima del equilibrio), y α < 0, entonces ΔYₜ < 0, es decir, Yₜ}
+\put(32.76,-368.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}cae para regresar al equilibrio. La velocidad de ajuste |α| determina qué tan rápido el sistema}
+\put(32.76,-381.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}regresa a la relación de cointegración.}
+\put(32.76,-399){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(b) Estimación de β y verificación de cointegración}
+\put(32.76,-415.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Paso 1 (Engle-Granger): Regresión OLS de Yₜ sobre Xₜ: Yₜ = α + βXₜ + uₜ. El estimador β̂ es}
+\put(32.76,-428.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}superconsistente (converge a tasa T, no √T).}
+\put(32.76,-445.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Paso 2: Calcular los residuos: Ẑₜ = Yₜ − β̂Xₜ}
+\put(32.76,-461.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Paso 3: Aplicar prueba ADF a Ẑₜ. Si se rechaza H₀ (raíz unitaria), entonces Ẑₜ ~ I(0) → cointegración}
+\put(32.76,-475.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}confirmada. Los valores críticos son ajustados (no estándar) porque Ẑₜ son residuos estimados.}
+\put(32.76,-492.8){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(c) Propiedades del spread AR(1): Zₜ = μ + ϕZₜ₋₁ + εₜ}
+\put(32.76,-509.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Media: E[Zₜ] = μ/(1−ϕ)}
+\put(32.76,-525.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Varianza: Var(Zₜ) = σ²/(1−ϕ²)}
+\put(32.76,-542.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Tiempo esperado de retorno a la media E[τμ]: Para un AR(1) con reversión a la media, el tiempo de}
+\put(32.76,-555.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}primer retorno a μ/(1−ϕ) desde una desviación inicial es aproximadamente:}
+\put(32.76,-572.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}E[τμ] ≈ 1/|log(ϕ)| = −1/log(ϕ) (para ϕ cerca de 1)}
+\put(32.76,-589.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Cuanto más cerca esté ϕ de 1, más lenta la reversión (mayor tiempo esperado).}
+\put(32.76,-606.8){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(d) Para ϕ=0.95, μ=0, σ=0.01}
+\put(32.76,-623.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}E[Zₜ] = 0/(1−0.95) = 0}
+\put(32.76,-639.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Var(Zₜ) = (0.01)²/(1−0.95²) = 0.0001/0.0975 ≈ 0.001026}
+\put(32.76,-656.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}DE(Zₜ) = √0.001026 ≈ 0.03203}
+\put(32.76,-673.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Regla de trading: Se abre posición cuando el spread se desvía más de ±2 DE del equilibrio,}
+\put(32.76,-686.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}esperando que revierta a la media. Señal de compra: Zₜ < −2·DE ≈ −0.064. Señal de venta: Zₜ >}
+\put(32.76,-699.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}+2·DE ≈ +0.064.}
+\put(32.76,-716.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}El tiempo esperado de retorno: E[τμ] ≈ −1/log(0.95) ≈ 19.5 períodos.}
+\end{picture}
+\newpage
+\begin{tikzpicture}[overlay]\path(0pt,0pt);\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(32.76,-44){\fontsize{12}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Sección 3: Modelos SARIMA y Estacionalidad}
+\put(32.76,-62.79999){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Ejercicio 3.1 — Estructura y Notación SARIMA}
+\put(32.76,-80.59998){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(a) SARIMA(1,1,1)(1,1,1)₁₂ expandido explícitamente}
+\put(32.76,-96.89996){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Los operadores son:}
+\put(32.76,-113.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• No estacional: ϕ₁(B) = 1−ϕ₁B, θ₁(B) = 1+θ₁B, (1−B)}
+\put(32.76,-130.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• Estacional: Φ₁(B¹²) = 1−Φ₁B¹², Θ₁(B¹²) = 1+Θ₁B¹², (1−B¹²)}
+\put(32.76,-147){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Modelo completo:}
+\put(32.76,-163.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(1−Φ₁B¹²)(1−ϕ₁B)(1−B¹²)(1−B)Yₜ = (1+Θ₁B¹²)(1+θ₁B)εₜ}
+\put(32.76,-180.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Expandiendo lado izquierdo:}
+\put(32.76,-197.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(1−ϕ₁B−Φ₁B¹²+ϕ₁Φ₁B¹³)(1−B−B¹²+B¹³)Yₜ}
+\put(32.76,-213.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}= (1+θ₁B+Θ₁B¹²+θ₁Θ₁B¹³)εₜ}
+\put(32.76,-231.5){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(b) Cálculo de Δ₁₂(Δ₁Yₜ)}
+\put(32.76,-247.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Δ₁Yₜ = Yₜ − Yₜ₋₁}
+\put(32.76,-264.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Δ₁₂(Δ₁Yₜ) = (Δ₁Yₜ) − (Δ₁Yₜ₋₁₂)}
+\put(32.76,-281.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}= (Yₜ − Yₜ₋₁) − (Yₜ₋₁₂ − Yₜ₋₁₃)}
+\put(32.76,-297.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ Δ₁₂Δ₁Yₜ = Yₜ − Yₜ₋₁ − Yₜ₋₁₂ + Yₜ₋₁₃}
+\put(32.76,-315.6){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(c) Patrones ACF/PACF con necesidad de diferenciación estacional}
+\put(32.76,-331.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Antes de aplicar Δ₁₂: La ACF muestral presenta picos significativos y persistentes en k=12, 24, 36,}
+\put(32.76,-345.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}... (múltiplos de s=12). ρ̂(12), ρ̂(24), ρ̂(36) son grandes y decaen muy lentamente, indicando no}
+\put(32.76,-358.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}estacionariedad estacional.}
+\put(32.76,-375){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Después de aplicar Δ₁₂: Los picos en múltiplos de 12 se eliminan o reducen drásticamente. Si ρ̂(12)}
+\put(32.76,-388.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}pasa de ser significativo a ser ≈0, la diferenciación estacional fue suficiente.}
+\put(32.76,-405.9){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(d) Combinación (d,D) para ventas minoristas mensuales}
+\put(32.76,-422.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Para ventas minoristas mensuales:}
+\put(32.76,-438.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}d = 1: Una diferencia no estacional para eliminar tendencia (las ventas crecen secularmente).}
+\put(32.76,-455.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}D = 1: Una diferencia estacional para eliminar el patrón estacional fijo (e.g., diciembre siempre es}
+\put(32.76,-468.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}mayor).}
+\put(32.76,-485.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Parsimonia: Usar D=2 rara vez mejora el ajuste y aumenta la varianza de los pronósticos. (d+D) ≤}
+\put(32.76,-498.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}2 es el criterio habitual.}
+\put(32.76,-515.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ Combinación usual: (d=1, D=1) con s=12 → SARIMA(p,1,q)(P,1,Q)₁₂}
+\put(32.76,-533.1){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Ejercicio 3.2 — Modelo de Airline para Ventas Mensuales}
+\put(32.76,-550.9){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(a) Expansión del lado izquierdo}
+\put(32.76,-567.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Modelo: (1−B)(1−B¹²)Vₜ = (1+θ₁B)(1+Θ₁B¹²)εₜ}
+\put(32.76,-583.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(1−B)(1−B¹²)Vₜ = (1−B¹²)Vₜ − B(1−B¹²)Vₜ}
+\put(32.76,-600.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}= Vₜ − Vₜ₋₁₂ − Vₜ₋₁ + Vₜ₋₁₃}
+\put(32.76,-617.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ (1−B)(1−B¹²)Vₜ = Vₜ − Vₜ₋₁ − Vₜ₋₁₂ + Vₜ₋₁₃ □}
+\put(32.76,-635){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(b) Expansión del lado derecho y ecuación completa}
+\put(32.76,-651.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}(1+θ₁B)(1+Θ₁B¹²)εₜ = εₜ + θ₁εₜ₋₁ + Θ₁εₜ₋₁₂ + θ₁Θ₁εₜ₋₁₃}
+\put(32.76,-668){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Ecuación completa del modelo:}
+\put(32.76,-684.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Vₜ = Vₜ₋₁ + Vₜ₋₁₂ − Vₜ₋₁₃ + εₜ + θ₁εₜ₋₁ + Θ₁εₜ₋₁₂ + θ₁Θ₁εₜ₋₁₃}
+\put(32.76,-702.4){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(c) Pronóstico V̂₆₁}
+\put(32.76,-718.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Datos: V₆₀=50, V₅₉=45, V₄₈=40, V₄₇=35, ε̂₆₀=2, ε̂₄₈=1}
+\put(32.76,-735.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Parámetros: θ̂₁=−0.4, Θ̂₁=−0.6}
+\end{picture}
+\newpage
+\begin{tikzpicture}[overlay]\path(0pt,0pt);\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(32.76,-42.29999){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Para t=61: ε̂₆₁=0 (innovación futura es cero en expectativa), ε̂₄₉=0}
+\put(32.76,-59){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}V̂₆₁ = V₆₀ + V₄₉ − V₄₈ + 0 + θ̂₁·ε̂₆₀ + Θ̂₁·ε̂₄₉ + θ̂₁Θ̂₁·ε̂₄₈}
+\put(32.76,-75.69995){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Necesitamos V₄₉. Aproximación: V₄₉ ≈ V₄₈ + (V₄₈−V₄₇) = 40+5 = 45 (o usar el valor conocido).}
+\put(32.76,-92.39996){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Asumiendo V₄₉=45:}
+\put(32.76,-109.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}V̂₆₁ = 50 + 45 − 40 + (−0.4)(2) + (−0.6)(0) + (−0.4)(−0.6)(1)}
+\put(32.76,-125.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}= 55 − 0.8 + 0 + 0.24 = 54.44}
+\put(32.76,-142.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}✓ V̂₆₁ ≈ 54.44 millones MXN}
+\put(32.76,-160.2){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(d) Intervalos de predicción y crecimiento con el horizonte}
+\put(32.76,-176.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}IC 95\% para V₆₁: 54.44 ± 1.96σ̂}
+\put(32.76,-193.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}IC 95\% para V₇₃: V̂₇₃ ± 1.96·σ̂√(MSE₁₃/σ²)}
+\put(32.76,-209.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Razón del crecimiento: El MSE de predicción crece con h porque los errores futuros εₜ₊₁, ..., εₜ₊ₕ se}
+\put(32.76,-223.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}acumulan en la predicción. A horizonte h=13 (un año), la incertidumbre incluye 13 innovaciones no}
+\put(32.76,-236.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}observadas, lo que incrementa la varianza del error de predicción.}
+\put(32.76,-254){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}Ejercicio 3.3 — SARIMA para Tasas CETES (s=13)}
+\put(32.76,-271.8){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(a) Especificación del modelo}
+\put(32.76,-288.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Para tasas de CETES a 28 días, semanales, con ciclo trimestral (s=13):}
+\put(32.76,-304.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Propuesta: SARIMA(1,1,1)(1,1,0)₁₃}
+\put(32.76,-321.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Justificación:}
+\put(32.76,-338.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• d=1: las tasas de interés tienen tendencia (no estacionarias en nivel).}
+\put(32.76,-354.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• D=1: ciclo trimestral persistente (calendario fiscal).}
+\put(32.76,-371.6){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• p=1, q=1: ACF/PACF no estacionales muestran decaimiento gradual → ARMA(1,1).}
+\put(32.76,-388.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• P=1: PACF se corta en rezago 13 → componente AR estacional de orden 1.}
+\put(32.76,-405){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• Q=0: ACF estacional decae → no hay MA estacional adicional.}
+\put(32.76,-422.7){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(b) Pronóstico 4 semanas con intervalos al 80\% y 95\%}
+\put(32.76,-439){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Con parámetros estimados \{ϕ₁, θ₁, Φ₁, σ̂²\}, el pronóstico a horizonte h=1,2,3,4:}
+\put(32.76,-455.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}r̂ₜ₊ₕ|ₜ = función de los parámetros y datos hasta t}
+\put(32.76,-472.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Intervalos de predicción:}
+\put(32.76,-489.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}IC 80\%: r̂ₜ₊ₕ|ₜ ± 1.282·√MSEₕ}
+\put(32.76,-505.8){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}IC 95\%: r̂ₜ₊ₕ|ₜ ± 1.960·√MSEₕ}
+\put(32.76,-522.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}donde MSEₕ = σ̂²·Σⱼ₌₀ʰ⁻¹ ψⱼ² (coeficientes impulso-respuesta del modelo).}
+\put(32.76,-540.2){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(c) Evaluación con ECMP}
+\put(32.76,-556.5){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ECMP (Error Cuadrático Medio de Predicción) en la muestra de validación (últimas 26 semanas):}
+\put(32.76,-573.2){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}ECMP = (1/26) Σₜ (Yₜ − Ŷₜ|ₜ₋₁)²}
+\put(32.76,-589.9){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Comparación con ARIMA(1,1,0): Si ECMP(SARIMA) < ECMP(ARIMA sin estacional), el componente}
+\put(32.76,-603.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}estacional contribuye al pronóstico fuera de muestra. Generalmente el SARIMA supera al ARIMA}
+\put(32.76,-616.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}para series con ciclos fiscales pronunciados.}
+\put(32.76,-634){\fontsize{10.8}{1}\usefont{T1}{ptm}{b}{n}\selectfont\color{color_62718}(d) Regla de trading y riesgo del modelo}
+\put(32.76,-650.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Regla de decisión: Sea Iₜ el IC al 95\% para la tasa en t+1.}
+\put(32.76,-667){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• Si LS(IC) < tasa\_actual → se espera caída en tasas → comprar futuros de CETES (posición larga).}
+\put(32.76,-683.7){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• Si LI(IC) > tasa\_actual → se espera alza en tasas → vender futuros (posición corta).}
+\put(32.76,-700.4){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}• Si la tasa actual está dentro del IC → no hay señal → no operar.}
+\put(32.76,-717.1){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}Riesgo del modelo: El modelo asume errores normales i.i.d., pero las tasas en períodos de crisis}
+\put(32.76,-730.3){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}pueden tener saltos estructurales. Un error de especificación (ARIMA sin estacional cuando hay}
+\end{picture}
+\newpage
+\begin{tikzpicture}[overlay]\path(0pt,0pt);\end{tikzpicture}
+\begin{picture}(-5,0)(2.5,0)
+\put(32.76,-42.29999){\fontsize{10.3}{1}\usefont{T1}{cmr}{m}{n}\selectfont\color{color_29791}estacionalidad real) infla el ECM y los intervalos son incorrectos.}
+\end{picture}
+\end{document}

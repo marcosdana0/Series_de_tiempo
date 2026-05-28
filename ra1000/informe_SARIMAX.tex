@@ -1,0 +1,364 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{parskip}
+
+\geometry{top=2.5cm, bottom=2.5cm, left=2.8cm, right=2.8cm}
+
+\definecolor{verdeinst}{RGB}{30,90,60}
+\definecolor{verdemedio}{RGB}{45,140,90}
+\definecolor{grisclaro}{RGB}{245,245,245}
+\definecolor{grisnota}{RGB}{100,100,100}
+
+\hypersetup{colorlinks=true, linkcolor=verdeinst, urlcolor=verdemedio, citecolor=verdeinst}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{grisnota}{Series de Tiempo --- SARIMAX}}
+\fancyhead[R]{\small\textcolor{grisnota}{Inflacion INPC Mexico}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\large\bfseries\color{verdeinst}}{{\thesection.}}{0.5em}{}[\vspace{-0.2em}\color{verdemedio}\hrule\vspace{0.3em}]
+\titleformat{\subsection}{\normalsize\bfseries\color{verdeinst}}{\thesubsection.}{0.5em}{}
+
+\captionsetup{font=small, labelfont=bf, labelsep=period}
+
+\begin{document}
+
+
+% ======================== RESUMEN ===========================
+\begin{abstract}
+\noindent
+Este trabajo analiza la variacion anual del Indice Nacional de Precios al Consumidor (INPC) de Mexico para el periodo enero 2005 -- diciembre 2023, mediante la estimacion de un modelo SARIMAX$(1,1,2)(1,1,1)_{12}$. El precio del petroleo West Texas Intermediate (WTI) se incorpora como variable exogena dado su papel como determinante de los precios energeticos que impactan directamente la canasta inflacionaria. El modelo captura adecuadamente los episodios de alta volatilidad inflacionaria asociados a la crisis financiera de 2008, el gasolinazo de 2017 y el repunte inflacionario global de 2022. Los criterios AIC y BIC seleccionan el modelo especificado, cuyos residuales son consistentes con ruido blanco. El pronostico para 2023 presenta un RMSE de 1.55 puntos porcentuales.
+
+\medskip
+\noindent\textbf{Palabras clave:} SARIMAX, INPC, inflacion, precio del petroleo, series de tiempo, Mexico.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% ====================== SECCION 1 ==========================
+\section{Introduccion}
+
+La inflacion es una de las variables macroeconomicas de mayor relevancia para los agentes economicos, pues afecta directamente el poder adquisitivo, las tasas de interes reales, las decisiones de inversion y la politica monetaria. En Mexico, el Banco de Mexico tiene como mandato constitucional mantener la inflacion medida por el INPC en torno a un objetivo puntual de 3\% anual, con un intervalo de variabilidad de $\pm$1 punto porcentual.
+
+La modelacion econometrica de la inflacion mediante series de tiempo permite comprender su dinamica inercial, estacional e identificar factores externos relevantes. En particular, los modelos SARIMAX representan una herramienta poderosa al combinar la estructura de dependencia temporal ---autorregresiva y de medias moviles--- con la capacidad de incorporar variables exogenas observables como el precio internacional del petroleo.
+
+El precio del crudo influye sobre la inflacion a traves de multiples canales: directamente mediante los precios de gasolinas y gas LP ---con peso significativo en el INPC--- e indirectamente a traves de los costos de transporte y logistica que encarecen los bienes de la canasta basica.
+
+Los objetivos del informe son:
+\begin{enumerate}[label=\roman*.]
+  \item Caracterizar la dinamica de la inflacion mexicana (INPC variacion anual) de 2005 a 2023, incluyendo sus principales episodios de alta volatilidad.
+  \item Identificar y estimar el mejor modelo SARIMAX que vincule la inflacion con el precio del petroleo WTI.
+  \item Evaluar la precision del pronostico para 2023 y discutir las implicaciones para el analisis financiero.
+\end{enumerate}
+
+\subsection{Principales episodios inflacionarios del periodo}
+
+\begin{itemize}
+  \item \textbf{Crisis financiera global (2008--2009)}: La transmision de choques externos elevo la inflacion hasta 6.5\%, antes de revertirse con la desaceleracion global.
+  \item \textbf{Gasolinazo (2017)}: La liberalizacion del precio de las gasolinas genero una espiral inflacionaria que llevo el INPC a 6.8\% a finales de ano.
+  \item \textbf{Inflacion global (2022)}: El alza de precios de energeticos y alimentos post-pandemia empujo la inflacion en Mexico a maximos de 8.7\%.
+\end{itemize}
+
+% ====================== SECCION 2 ==========================
+\section{Marco Teorico}
+
+\subsection{Modelos ARIMA estacionales}
+
+Un proceso SARIMA$(p,d,q)(P,D,Q)_s$ se define como:
+
+\begin{equation}
+  \Phi_P(B^s)\,\phi_p(B)\,(1-B)^d\,(1-B^s)^D\,y_t = \mu + \Theta_Q(B^s)\,\theta_q(B)\,\varepsilon_t,
+  \label{eq:sarima2}
+\end{equation}
+
+donde $\mu$ es la constante del modelo y el resto de la notacion sigue la definicion estandar de la literatura. La condicion de invertibilidad y estacionariedad requiere que las raices de los polinomios $\phi_p(z)$, $\Phi_P(z^s)$, $\theta_q(z)$ y $\Theta_Q(z^s)$ esten fuera del circulo unitario.
+
+\subsection{Extension con variables exogenas (SARIMAX)}
+
+El modelo SARIMAX incorpora variables exogenas en el marco SARIMA:
+
+\begin{equation}
+  \Phi_P(B^s)\,\phi_p(B)\,(1-B)^d\,(1-B^s)^D\,y_t = \boldsymbol{\beta}^\top\mathbf{x}_t + \Theta_Q(B^s)\,\theta_q(B)\,\varepsilon_t,
+  \label{eq:sarimax2}
+\end{equation}
+
+donde $\mathbf{x}_t$ son las variables exogenas y $\boldsymbol{\beta}$ su vector de coeficientes. Se asume que $\mathbf{x}_t$ es exogenamente determinada y que $\varepsilon_t \sim \mathcal{N}(0,\sigma^2_\varepsilon)$.
+
+\subsection{Transmision del precio del petroleo a la inflacion}
+
+La transmision del precio del crudo a la inflacion al consumidor sigue el esquema:
+
+\begin{equation}
+  \pi_t = \alpha + \gamma\cdot p^{\text{WTI}}_t + \text{inercia}_t + \text{componente estacional}_t + \varepsilon_t,
+\end{equation}
+
+donde $\gamma > 0$ captura el coeficiente de pass-through. La evidencia empirica para Mexico documenta coeficientes de pass-through del petroleo a la inflacion general de entre 0.05 y 0.15, siendo mayor en el componente no subyacente (precios energeticos y agropecuarios).
+
+\subsection{Criterios de seleccion}
+
+\begin{align}
+  \text{AIC} &= -2\,\ell(\hat{\boldsymbol{\theta}}) + 2\kappa, \\
+  \text{BIC} &= -2\,\ell(\hat{\boldsymbol{\theta}}) + \kappa\ln(T).
+\end{align}
+
+El BIC penaliza mas fuertemente la complejidad, siendo preferible cuando el objetivo es la parsimonia del modelo.
+
+% ====================== SECCION 3 ==========================
+\section{Descripcion de los Datos}
+
+\subsection{INPC: variacion anual}
+
+La variable dependiente es la variacion porcentual anual del INPC de Mexico, obtenida del Banco de Mexico, para el periodo enero 2005 -- diciembre 2023 ($T = 228$ observaciones). La Figura~\ref{fig:serie2} ilustra la evolucion de la serie.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{fig2_serie.pdf}
+  \caption{Variacion anual del INPC en Mexico, enero 2005 -- diciembre 2023 (\%). Se senalan los tres principales episodios de presion inflacionaria del periodo.}
+  \label{fig:serie2}
+\end{figure}
+
+La serie muestra una media de aproximadamente 4.2\% con fluctuaciones importantes en torno a los tres episodios descritos. Los minimos historicos se registraron en 2015--2016, periodo de bajo precio del petroleo y relativa estabilidad cambiaria.
+
+\subsection{Variable exogena: precio del petroleo WTI}
+
+El precio del petroleo West Texas Intermediate (WTI) en dolares por barril se obtiene de la Administracion de Informacion Energetica de Estados Unidos (EIA). Su inclusion como regresor externo refleja la importancia de los precios energeticos en la determinacion de la inflacion no subyacente en Mexico.
+
+\subsection{Estadisticas descriptivas}
+
+\begin{table}[H]
+  \centering
+  \caption{Estadisticas descriptivas de las series empleadas, enero 2005 -- diciembre 2023.}
+  \label{tab:estadisticas2}
+  \begin{tabular}{lcccccc}
+    \toprule
+    \textbf{Variable} & \textbf{Obs.} & \textbf{Media} & \textbf{D.E.} & \textbf{Min.} & \textbf{Max.} & \textbf{Curtosis} \\
+    \midrule
+    INPC var. anual (\%)   & 228 &  4.22 &  1.41 &  2.13 &  8.71 & 3.81 \\
+    Precio WTI (\$/barril) & 228 & 71.34 & 21.60 & 20.11 & 118.4 & 2.93 \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}
+    \small\item \textit{Nota}: D.E. = desviacion estandar. Correlacion entre series: $r = 0.41$.
+  \end{tablenotes}
+\end{table}
+
+% ====================== SECCION 4 ==========================
+\section{Analisis de Estacionariedad}
+
+\subsection{Prueba de Dickey-Fuller Aumentada}
+
+\begin{table}[H]
+  \centering
+  \caption{Resultados de la prueba ADF para la variacion anual del INPC y sus diferencias.}
+  \label{tab:adf2}
+  \begin{tabular}{lcccc}
+    \toprule
+    \textbf{Serie} & \textbf{Estadistico ADF} & \textbf{$p$-valor} & \textbf{VC 5\%} & \textbf{Conclusion} \\
+    \midrule
+    INPC en niveles            & $-2.04$ & 0.268 & $-2.876$ & No estacionaria \\
+    $\Delta_{12}$ INPC         & $-2.48$ & 0.117 & $-2.876$ & No estacionaria \\
+    $\Delta\,\Delta_{12}$ INPC & $-9.21$ & 0.000 & $-2.876$ & \textbf{Estacionaria} \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}
+    \small\item \textit{Nota}: Rezagos seleccionados por AIC. VC = valor critico al 5\%.
+  \end{tablenotes}
+\end{table}
+
+\subsection{Funciones de autocorrelacion muestral}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{fig2_acf.pdf}
+  \caption{ACF y PACF de $\Delta\,\Delta_{12}\,\pi_t$ (variacion anual del INPC doblemente diferenciada). Las bandas representan intervalos de confianza al 95\%.}
+  \label{fig:acf2}
+\end{figure}
+
+La ACF presenta decaimiento gradual con picos en rezagos multiples de 12, compatible con efectos estacionales persistentes. La PACF exhibe un corte brusco tras el rezago 1, sugiriendo un componente AR(1). Tras el analisis combinado de los correlogramas y la comparacion de AIC/BIC, se selecciona el orden $(1,1,2)(1,1,1)_{12}$.
+
+% ====================== SECCION 5 ==========================
+\section{Estimacion del Modelo SARIMAX}
+
+\subsection{Especificacion formal}
+
+El modelo estimado es:
+
+\begin{equation}
+  (1-\phi_1 B)(1-\Phi_1 B^{12})(1-B)(1-B^{12})\,\pi_t
+  = \beta_1\cdot p^{\text{WTI}}_t + (1+\theta_1 B+\theta_2 B^2)(1+\Theta_1 B^{12})\,\varepsilon_t,
+\end{equation}
+
+donde $\pi_t$ es la variacion porcentual anual del INPC y $p^{\text{WTI}}_t$ es el precio del crudo WTI en dolares por barril.
+
+\subsection{Resultados de la estimacion}
+
+\begin{table}[H]
+  \centering
+  \caption{Estimacion del modelo SARIMAX$(1,1,2)(1,1,1)_{12}$ para la inflacion (INPC var. anual).}
+  \label{tab:resultados2}
+  \begin{tabular}{lcccc}
+    \toprule
+    \textbf{Parametro} & \textbf{Simbolo} & \textbf{Estimado} & \textbf{Error estandar} & \textbf{$p$-valor} \\
+    \midrule
+    AR(1) no estacional    & $\hat{\phi}_1$   &  $0.614$  & 0.094 & $<0.001$ \\
+    MA(1) no estacional    & $\hat{\theta}_1$ & $-0.882$  & 0.101 & $<0.001$ \\
+    MA(2) no estacional    & $\hat{\theta}_2$ & $-0.247$  & 0.088 &  $0.005$ \\
+    AR(1) estacional       & $\hat{\Phi}_1$   & $-0.143$  & 0.119 &  $0.229$ \\
+    MA(1) estacional       & $\hat{\Theta}_1$ & $-0.998$  & 0.264 & $<0.001$ \\
+    Precio WTI (exog.)     & $\hat{\beta}_1$  &  $0.0112$ & 0.004 &  $0.006$ \\
+    \midrule
+    AIC               & & \multicolumn{3}{c}{355.54} \\
+    BIC               & & \multicolumn{3}{c}{378.74} \\
+    Log-verosimilitud & & \multicolumn{3}{c}{$-170.77$} \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}
+    \small\item \textit{Nota}: Muestra de entrenamiento: enero 2005 -- diciembre 2022 ($T=216$).
+  \end{tablenotes}
+\end{table}
+
+El coeficiente $\hat{\beta}_1 = 0.0112$ indica que un incremento de \$10 USD en el precio del barril de crudo WTI se asocia, ceteris paribus, con un aumento de aproximadamente 0.11 puntos porcentuales en la variacion anual del INPC. Este resultado es consistente con la literatura sobre pass-through energetico en Mexico.
+
+\subsection{Comparacion de modelos candidatos}
+
+\begin{table}[H]
+  \centering
+  \caption{Comparacion de modelos SARIMAX candidatos para la inflacion (INPC var. anual).}
+  \label{tab:comparacion2}
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{Modelo} & \textbf{AIC} & \textbf{BIC} & \textbf{Seleccionado} \\
+    \midrule
+    SARIMAX$(1,1,1)(1,1,1)_{12}$ & 362.87 & 382.63 & No \\
+    SARIMAX$(1,1,2)(1,1,1)_{12}$ & 355.54 & 378.74 & \textbf{Si} \\
+    SARIMAX$(2,1,2)(1,1,1)_{12}$ & 357.22 & 384.18 & No \\
+    SARIMAX$(2,1,1)(1,1,1)_{12}$ & 358.91 & 381.62 & No \\
+    SARIMAX$(1,1,2)(0,1,1)_{12}$ & 363.44 & 383.28 & No \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}
+    \small\item \textit{Nota}: Todos los modelos incluyen el precio WTI como variable exogena.
+  \end{tablenotes}
+\end{table}
+
+% ====================== SECCION 6 ==========================
+\section{Diagnostico del Modelo}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.97\textwidth]{fig2_resid.pdf}
+  \caption{Diagnostico de residuales del modelo SARIMAX$(1,1,2)(1,1,1)_{12}$: trayectoria temporal (izquierda), ACF de residuales (centro) y distribucion empirica vs.\ normal teorica (derecha).}
+  \label{fig:resid2}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{Pruebas formales de diagnostico sobre los residuales del modelo.}
+  \label{tab:diagnostico2}
+  \begin{tabular}{lcccc}
+    \toprule
+    \textbf{Prueba} & \textbf{Hipotesis nula} & \textbf{Estadistico} & \textbf{$p$-valor} & \textbf{Resultado} \\
+    \midrule
+    Ljung-Box ($h=12$) & No autocorrelacion & $Q = 10.87$ & 0.539 & No rechazar $H_0$ \\
+    Ljung-Box ($h=24$) & No autocorrelacion & $Q = 21.04$ & 0.631 & No rechazar $H_0$ \\
+    Jarque-Bera        & Normalidad         & $JB = 4.12$ & 0.127 & No rechazar $H_0$ \\
+    ARCH-LM (lag 5)    & Sin efecto ARCH    & $LM = 6.31$ & 0.277 & No rechazar $H_0$ \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}
+    \small\item \textit{Nota}: Nivel de significancia $\alpha = 0.05$.
+  \end{tablenotes}
+\end{table}
+
+Todas las pruebas no rechazan las hipotesis nulas al 5\%, confirmando que los residuales son estadisticamente indistinguibles de ruido blanco gaussiano y que la especificacion del modelo es adecuada.
+
+% ====================== SECCION 7 ==========================
+\section{Pronostico para 2023}
+
+Se generan pronosticos dinamicos para enero--diciembre 2023 utilizando los valores observados del precio del crudo WTI como variable exogena. La Figura~\ref{fig:forecast2} compara el pronostico con los valores reales.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{fig2_forecast.pdf}
+  \caption{Pronostico de la variacion anual del INPC para 2023 mediante SARIMAX$(1,1,2)(1,1,1)_{12}$ (linea roja) vs.\ valores reales (linea verde discontinua). Region sombreada: intervalo de confianza al 95\%.}
+  \label{fig:forecast2}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{Metricas de evaluacion del pronostico de inflacion, enero--diciembre 2023.}
+  \label{tab:metricas2}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Metrica} & \textbf{Formula} & \textbf{Valor} \\
+    \midrule
+    RMSE      & $\sqrt{\frac{1}{12}\sum(y_t-\hat{y}_t)^2}$                         & 1.552 pp \\[5pt]
+    MAE       & $\frac{1}{12}\sum|y_t-\hat{y}_t|$                                  & 1.499 pp \\[5pt]
+    MAPE      & $\frac{100}{12}\sum\left|\frac{y_t-\hat{y}_t}{y_t}\right|$         & 20.5\%   \\[5pt]
+    Theil $U$ & $\frac{\text{RMSE}_\text{modelo}}{\text{RMSE}_\text{naive}}$       &  0.72    \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}
+    \small\item \textit{Nota}: pp = puntos porcentuales. Modelo naive: $\hat{\pi}_t = \pi_{t-12}$.
+  \end{tablenotes}
+\end{table}
+
+El coeficiente de Theil de 0.72 confirma que el modelo supera al pronostico estacional ingenuo. El MAPE de 20.5\% es relativamente elevado en terminos relativos debido a la escala reducida de la variable (tasas de 4--8\%), pero el RMSE de 1.55 pp es aceptable para un modelo univariado sin informacion adelantada.
+
+% ====================== SECCION 8 ==========================
+\section{Implicaciones para el Analisis Financiero}
+
+\textbf{Instrumentos de deuda gubernamental.} Los MBONOS a tasa fija son particularmente sensibles a las expectativas de inflacion. El modelo indica que la inflacion en Mexico mantiene inercia de corto plazo significativa ($\hat{\phi}_1 = 0.614$), lo que implica que los movimientos de tasas del Banco de Mexico tardan varios meses en transmitirse plenamente a la dinamica inflacionaria.
+
+\textbf{Cobertura de riesgo inflacionario.} La vinculacion estadisticamente significativa entre el precio del crudo y la inflacion ($\hat{\beta}_1 = 0.011$, $p = 0.006$) justifica el uso de contratos de futuros de petroleo como instrumento de cobertura parcial frente al riesgo inflacionario, especialmente para portafolios con pasivos indexados a inflacion.
+
+\textbf{Estacionalidad del INPC.} El patron estacional capturado por los componentes $(1,1,1)_{12}$ refleja ciclos recurrentes vinculados a ajustes de precios agricolas, tarifas electricas y temporadas comerciales, relevantes para el analisis de deflactores sectoriales y la construccion de estimaciones de PIB real.
+
+% ====================== SECCION 9 ==========================
+\section{Conclusiones}
+
+\begin{enumerate}[label=\arabic*.]
+  \item La inflacion mexicana (INPC variacion anual) es integrada de orden uno con componente estacional de periodo 12, requiriendo diferenciacion regular y estacional para alcanzar la estacionariedad.
+  \item El modelo SARIMAX$(1,1,2)(1,1,1)_{12}$ domina a los modelos alternativos evaluados segun los criterios AIC y BIC.
+  \item El precio del petroleo WTI exhibe un efecto positivo y estadisticamente significativo sobre la inflacion ($\hat{\beta}_1 = 0.011$, $p=0.006$), cuantificando un pass-through de aproximadamente 0.11 pp por cada \$10 USD de incremento en el precio del barril.
+  \item Los residuales del modelo son estadisticamente indistinguibles de ruido blanco gaussiano, validando la especificacion elegida.
+  \item El modelo genera pronosticos razonables para 2023 con RMSE = 1.55 pp y Theil $U = 0.72$, superando al pronostico estacional ingenuo.
+\end{enumerate}
+
+Para investigacion futura se recomienda explorar modelos GARCH-SARIMAX para capturar la varianza condicional heteroscedastica de la inflacion, asi como la incorporacion de expectativas de inflacion y variables de politica monetaria como regresores adicionales.
+
+% ====================== REFERENCIAS ========================
+\newpage
+\section*{Referencias}
+\addcontentsline{toc}{section}{Referencias}
+
+\begin{enumerate}[label={[\arabic*]}]
+  \item Box, G. E. P., Jenkins, G. M., Reinsel, G. C., \& Ljung, G. M. (2015). \textit{Time Series Analysis: Forecasting and Control} (5th ed.). Wiley.
+  \item Hyndman, R. J., \& Athanasopoulos, G. (2021). \textit{Forecasting: Principles and Practice} (3rd ed.). OTexts. \url{https://otexts.com/fpp3/}
+  \item Banco de Mexico (2024). \textit{Estadisticas: Indice Nacional de Precios al Consumidor}. \url{https://www.banxico.org.mx}
+  \item EIA --- U.S. Energy Information Administration (2024). \textit{WTI crude oil prices}. \url{https://www.eia.gov}
+  \item Shumway, R. H., \& Stoffer, D. S. (2017). \textit{Time Series Analysis and Its Applications} (4th ed.). Springer.
+  \item Capistrán, C., \& Ramos-Francia, M. (2009). Inflation dynamics in Latin America. \textit{Contemporary Economic Policy}, 27(3), 349--362.
+  \item Schwarz, G. (1978). Estimating the dimension of a model. \textit{Annals of Statistics}, 6(2), 461--464.
+  \item Engle, R. F. (1982). Autoregressive conditional heteroscedasticity with estimates of the variance of UK inflation. \textit{Econometrica}, 50(4), 987--1007.
+\end{enumerate}
+
+\end{document}
